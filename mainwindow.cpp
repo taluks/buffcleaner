@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(trayIcon, &QSystemTrayIcon::activated, this, &MainWindow::iconActivated);
 
     setWindowTitle(tr("Buffcleaner"));
-    setFixedSize(width(), height());
+    setFixedSize(250, 300);
 
     timer = new QTimer(this);
 
@@ -84,10 +84,10 @@ void MainWindow::createUi()
 {
     delayGroupBox = new QGroupBox(tr("Set Delay"));
 
-    delayLabel = new QLabel("Clean \nevery:");
+    delayLabel = new QLabel("Clean every:");
 
     durationSpinBox = new QSpinBox;
-    durationSpinBox->setRange(1, 99);
+    durationSpinBox->setRange(1, 999);
     durationSpinBox->setValue(15);
 
     delayComboBox = new QComboBox;
