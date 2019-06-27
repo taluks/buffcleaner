@@ -1,15 +1,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
 #include <QSystemTrayIcon>
-#include <QMessageBox>
-#include <QCloseEvent>
-#include <QGroupBox>
-#include <QCheckBox>
-#include <QLabel>
-#include <QComboBox>
-#include <QHBoxLayout>
+#include <QMainWindow>
+
+QT_BEGIN_NAMESPACE
+class QAction;
+class QMenu;
+QT_END_NAMESPACE
 
 namespace Ui {
 class MainWindow;
@@ -21,22 +19,30 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-    void setVisible(bool visible);
-    void createActions();
-    ~MainWindow();
-protected:
-    void closeEvent(QCloseEvent *event);
-private:
-    Ui::MainWindow *ui;
+    ~MainWindow() override;
 
-    QSystemTrayIcon *trayIcon;
-    QMenu *trayIconMenu;
+    void setVisible(bool visible) override;
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
+
+private slots:
+    void setIcon(int index);
+    void iconActivated(QSystemTrayIcon::ActivationReason reason);
+    void showMessage();
+    void messageClicked();
+
+private:
+    void createActions();
+    void createTrayIcon();
+
+    Ui::MainWindow *ui;
 
     QAction *restoreAction;
     QAction *quitAction;
 
-    void createIconGroupBox();
-    void createTrayIcon();
+    QSystemTrayIcon *trayIcon;
+    QMenu *trayIconMenu;
 };
 
 #endif // MAINWINDOW_H

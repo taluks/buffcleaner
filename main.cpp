@@ -3,9 +3,14 @@
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    Q_INIT_RESOURCE(tray);
+    QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+
+    QApplication app(argc, argv);
+    QApplication::setQuitOnLastWindowClosed(false);
+
     MainWindow w;
     w.show();
 
-    return a.exec();
+    return app.exec();
 }

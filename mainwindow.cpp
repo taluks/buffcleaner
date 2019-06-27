@@ -1,19 +1,26 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+#include <QAction>
+#include <QCoreApplication>
+#include <QCloseEvent>
+#include <QMenu>
+#include <QMessageBox>
+
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
     createActions();
     createTrayIcon();
 
-    trayIcon->show();
+    connect(trayIcon, &QSystemTrayIcon::messageClicked, this, &MainWindow::messageClicked);
+    connect(trayIcon, &QSystemTrayIcon::activated, this, &MainWindow::iconActivated);
 
-    setWindowTitle(tr("Buff Cleaner"));
-    setFixedSize(width(), height());
+    setWindowTitle(tr("Buffcleaner"));
+    resize(400, 300);
 }
 
 MainWindow::~MainWindow()
@@ -40,13 +47,43 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
 }
 
+void MainWindow::setIcon(int /*index*/)
+{
+
+}
+
+void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
+{
+    switch (reason) {
+    case QSystemTrayIcon::Trigger:
+    case QSystemTrayIcon::DoubleClick:
+    case QSystemTrayIcon::MiddleClick:
+        showMessage();
+        break;
+    default:
+        ;
+    }
+}
+
+void MainWindow::showMessage()
+{
+    trayIcon->showMessage(tr("Title"), tr("test message"), windowIcon(), 5000);
+}
+
+void MainWindow::messageClicked()
+{
+    QMessageBox::information(nullptr, tr("Buffcleaner"),
+                             tr("Sorry, I already gave what help I could.\n"
+                                "Maybe you should try asking a human?"));
+}
+
 void MainWindow::createActions()
 {
-    restoreAction = new QAction(tr("&Open"), this);
-    connect(restoreAction, SIGNAL(triggered()), this, SLOT(showNormal()));
+    restoreAction = new QAction(tr("&Restore"), this);
+    connect(restoreAction, &QAction::triggered, this, &QWidget::showNormal);
 
     quitAction = new QAction(tr("&Quit"), this);
-    connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+    connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
 }
 
 void MainWindow::createTrayIcon()
@@ -56,10 +93,8 @@ void MainWindow::createTrayIcon()
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(quitAction);
 
-    QIcon icon = QIcon(":/assets/trash.png");
     trayIcon = new QSystemTrayIcon(this);
     trayIcon->setContextMenu(trayIconMenu);
-    trayIcon->setIcon(icon);
-
-    setWindowIcon(icon);
+    trayIcon->setIcon(QIcon(":/assets/trash.png"));
+    trayIcon->setVisible(true);
 }
