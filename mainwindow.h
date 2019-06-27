@@ -3,17 +3,19 @@
 
 #include <QSystemTrayIcon>
 #include <QMainWindow>
-#include <QLabel>
-#include <QComboBox>
 #include <QClipboard>
 #include <QMimeData>
 #include <signal.h>
 #include <QTimer>
-#include <QHBoxLayout>
 
 QT_BEGIN_NAMESPACE
 class QAction;
 class QMenu;
+class QGroupBox;
+class QLabel;
+class QComboBox;
+class QHBoxLayout;
+class QSpinBox;
 QT_END_NAMESPACE
 
 namespace Ui {
@@ -48,6 +50,12 @@ private:
 
     Ui::MainWindow *ui;
 
+    QGroupBox *delayGroupBox;
+    QLabel *delayLabel;
+    QComboBox *delayComboBox;
+    QSpinBox *durationSpinBox;
+
+    QGroupBox *timerGroupBox;
     QLabel *timerLabel;
     QTimer *timer;
     int timeout;

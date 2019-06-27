@@ -4,8 +4,13 @@
 #include <QAction>
 #include <QCoreApplication>
 #include <QCloseEvent>
+#include <QGroupBox>
+#include <QLabel>
+#include <QComboBox>
+#include <QHBoxLayout>
 #include <QMenu>
 #include <QMessageBox>
+#include <QSpinBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -77,6 +82,27 @@ void MainWindow::showMessage()
 
 void MainWindow::createUi()
 {
+    delayGroupBox = new QGroupBox(tr("Set Delay"));
+
+    delayLabel = new QLabel("Clean \nevery:");
+
+    durationSpinBox = new QSpinBox;
+    durationSpinBox->setRange(1, 99);
+    durationSpinBox->setValue(15);
+
+    delayComboBox = new QComboBox;
+    delayComboBox->addItem("Seconds");
+    delayComboBox->addItem("Minutes");
+    delayComboBox->addItem("Hours");
+
+    QHBoxLayout *delayLayout = new QHBoxLayout;
+    delayLayout->addWidget(delayLabel);
+    delayLayout->addWidget(durationSpinBox);
+    delayLayout->addWidget(delayComboBox);
+    delayGroupBox->setLayout(delayLayout);
+
+
+    timerGroupBox = new QGroupBox(tr("Timer"));
     timerLabel = new QLabel;
     timerLabel->setText("Timeout:");
 
@@ -92,7 +118,12 @@ void MainWindow::createUi()
     layout->addWidget(timerLabel);
     layout->addWidget(timeoutComboBox);
     layout->addStretch(0);
-    this->centralWidget()->setLayout(layout);
+    timerGroupBox->setLayout(layout);
+
+    QVBoxLayout *mainLayout = new QVBoxLayout;
+    mainLayout->addWidget(delayGroupBox);
+    mainLayout->addWidget(timerGroupBox);
+    centralWidget()->setLayout(mainLayout);
 }
 
 void MainWindow::timeoutChanged(int index){
