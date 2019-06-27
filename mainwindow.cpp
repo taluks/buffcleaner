@@ -13,14 +13,19 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    createUi();
     createActions();
     createTrayIcon();
 
-    connect(trayIcon, &QSystemTrayIcon::messageClicked, this, &MainWindow::messageClicked);
     connect(trayIcon, &QSystemTrayIcon::activated, this, &MainWindow::iconActivated);
 
     setWindowTitle(tr("Buffcleaner"));
-    resize(400, 300);
+    setFixedSize(width(), height());
+
+    timer = new QTimer(this);
+
+    QClipboard * const clipboard =  QApplication::clipboard();
+    connect(clipboard, SIGNAL(dataChanged()), this, SLOT(onClipboardChanged()));
 }
 
 MainWindow::~MainWindow()
@@ -37,19 +42,19 @@ void MainWindow::setVisible(bool visible)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (trayIcon->isVisible()) {
-        QMessageBox::information(this, tr("Systray"),
-                                 tr("The program will keep running in the "
-                                    "system tray. To terminate the program, "
-                                    "choose <b>Quit</b> in the context menu "
-                                    "of the system tray entry."));
         hide();
         event->ignore();
     }
 }
 
-void MainWindow::setIcon(int /*index*/)
-{
+void MainWindow::onClipboardChanged(){
+    timer->singleShot(timeout, this, SLOT(clearClipboard()));
+}
 
+void MainWindow::clearClipboard() {
+    if(QClipboard* c = QApplication::clipboard()) {
+        c->clear();
+    }
 }
 
 void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
@@ -70,11 +75,39 @@ void MainWindow::showMessage()
     trayIcon->showMessage(tr("Title"), tr("test message"), windowIcon(), 5000);
 }
 
-void MainWindow::messageClicked()
+void MainWindow::createUi()
 {
-    QMessageBox::information(nullptr, tr("Buffcleaner"),
-                             tr("Sorry, I already gave what help I could.\n"
-                                "Maybe you should try asking a human?"));
+    timerLabel = new QLabel;
+    timerLabel->setText("Timeout:");
+
+    timeoutComboBox = new QComboBox;
+    timeoutComboBox->addItem("5 sec");
+    timeoutComboBox->addItem("30 sec");
+    timeoutComboBox->addItem("5 minutes");
+
+    connect(timeoutComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(timeoutChanged(int)));
+    timeoutComboBox->setCurrentIndex(timeoutComboBox->findData("30 sec", Qt::DisplayRole));
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(timerLabel);
+    layout->addWidget(timeoutComboBox);
+    layout->addStretch(0);
+    this->centralWidget()->setLayout(layout);
+}
+
+void MainWindow::timeoutChanged(int index){
+    switch (index) {
+    case 0:
+        timeout = 5 * 1000;
+        break;
+    case 1:
+        timeout = 30 * 1000;
+        break;
+    case 2:
+        timeout = 60 * 1000 * 5;
+        break;
+    }
+    qInfo("Timeout: %d", timeout);
 }
 
 void MainWindow::createActions()

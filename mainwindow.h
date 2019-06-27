@@ -3,6 +3,13 @@
 
 #include <QSystemTrayIcon>
 #include <QMainWindow>
+#include <QLabel>
+#include <QComboBox>
+#include <QClipboard>
+#include <QMimeData>
+#include <signal.h>
+#include <QTimer>
+#include <QHBoxLayout>
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -27,16 +34,25 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private slots:
-    void setIcon(int index);
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void showMessage();
-    void messageClicked();
+    void onClipboardChanged();
+    void clearClipboard();
+    void timeoutChanged(int index);
+
 
 private:
+    void createUi();
     void createActions();
     void createTrayIcon();
 
     Ui::MainWindow *ui;
+
+    QLabel *timerLabel;
+    QTimer *timer;
+    int timeout;
+
+    QComboBox *timeoutComboBox;
 
     QAction *restoreAction;
     QAction *quitAction;
