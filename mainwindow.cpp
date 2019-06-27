@@ -53,7 +53,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 }
 
 void MainWindow::onClipboardChanged(){
-    timer->singleShot(timeout, this, SLOT(clearClipboard()));
+    if(!timer->isActive())
+        timer->singleShot(timeout, this, SLOT(clearClipboard()));
 }
 
 void MainWindow::clearClipboard() {
