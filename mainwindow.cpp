@@ -58,8 +58,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::onClipboardChanged(){
     if(timer->isActive())
         timer->stop();
-    QClipboard *clipboard =  QApplication::clipboard();
-    if(!clipboard->text().isEmpty())
+    const QClipboard *clipboard =  QApplication::clipboard();
+    const QMimeData *mimeData = clipboard->mimeData();
+    if(mimeData->hasHtml() || mimeData->hasText() || mimeData->hasUrls()
+            || mimeData->hasColor() || mimeData->hasImage())
         timer->singleShot(timeout, this, &MainWindow::clearClipboard);
 }
 
