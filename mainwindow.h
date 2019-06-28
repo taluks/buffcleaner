@@ -37,16 +37,14 @@ protected:
 
 private slots:
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
-    void showMessage();
     void onClipboardChanged();
     void clearClipboard();
-    void timeoutChanged(int index);
-
 
 private:
     void createUi();
     void createActions();
     void createTrayIcon();
+    void updateTimeout();
 
     Ui::MainWindow *ui;
 
@@ -55,14 +53,12 @@ private:
     QComboBox *delayComboBox;
     QSpinBox *durationSpinBox;
 
-    QGroupBox *timerGroupBox;
-    QLabel *timerLabel;
     QTimer *timer;
+    int currentTimeUnit;
     int timeout;
 
-    QComboBox *timeoutComboBox;
-
     QAction *restoreAction;
+    QAction *clearClipboardAction;
     QAction *quitAction;
 
     QSystemTrayIcon *trayIcon;
